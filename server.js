@@ -9,6 +9,13 @@
    credential: admin.credential.cert(serviceAccount)
  });
 
+ /* Referencia al módulo swagger-ui-express */
+ const swaggerUi = require('swagger-ui-express')
+
+ /* Referencia al archivo con la descripción */
+ const swaggerFile = require('./swagger_output.json')
+
+
  const app = express();
  app.use(bodyParser.json());
 
@@ -19,3 +26,8 @@
  app.listen(PORT, () => {
    console.log(`Server is running on port ${PORT}`);
  });
+
+  /* Ruta Base -> Documentación */
+  app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
+  app.use('/api', require('./routes/api'));
