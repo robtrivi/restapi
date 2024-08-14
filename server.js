@@ -1,33 +1,32 @@
- require('dotenv').config()
+require('dotenv').config()
 
- const express = require('express');
- const bodyParser = require('body-parser');
- const admin = require('firebase-admin');
- const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_API)
+const express = require('express');
+const bodyParser = require('body-parser');
+const admin = require('firebase-admin');
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_API)
 
- admin.initializeApp({
-   credential: admin.credential.cert(serviceAccount)
- });
+/* Referencia al módulo swagger-ui-express */
+const swaggerUi = require('swagger-ui-express')
 
- /* Referencia al módulo swagger-ui-express */
- const swaggerUi = require('swagger-ui-express')
+/* Referencia al archivo con la descripción */
+const swaggerFile = require('./swagger_output.json')
 
- /* Referencia al archivo con la descripción */
- const swaggerFile = require('./swagger_output.json')
+const verifyToken = require('./middleware/authenticate_token.js');
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
 
- const app = express();
- app.use(bodyParser.json());
+const app = express();
+app.use(bodyParser.json());
 
- const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
- app.use('/api', require('./routes/api'));
+/* Ruta Base -> Documentación */
+app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
- app.listen(PORT, () => {
-   console.log(`Server is running on port ${PORT}`);
- });
+app.use('/api', verifyToken, require('./routes/api'));
 
-  /* Ruta Base -> Documentación */
-  app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-
-  app.use('/api', require('./routes/api'));
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
