@@ -1,6 +1,8 @@
 const admin = require('firebase-admin');
 const db = admin.firestore();
-
+/*
+Edicion
+*/
 exports.createItem = async (req, res) => {
   /* 
      #swagger.tags = ['Items']
