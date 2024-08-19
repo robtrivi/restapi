@@ -17,8 +17,12 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const app = express();
-app.use(bodyParser.json());
+ const app = express();
+ const apiRoutes = require('./routes/api');
+ app.use(express.json());
+ app.use(express.urlencoded({ extended: true }));
+ app.use('/api',auth_middleware, apiRoutes);
+ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5000;
 
